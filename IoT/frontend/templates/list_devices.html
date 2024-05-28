@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список устройств</title>
+    <style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-image: url('https://a.l3n.co/i/9vsGM.jpg'); 
+        background-size: cover;
+        background-position: center;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+    }
+    .container {
+        width: 100%;
+        max-width: 900px; 
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        padding: 20px;
+    }
+    h2 {
+        color: #333;
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        table-layout: auto; 
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        word-wrap: break-word; 
+        white-space: normal; 
+    }
+
+    th {
+        background-color: #f8f8f8;
+    }
+    .buttons {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px; 
+    }
+    button, a {
+        padding: 10px 20px;
+        background-color: #007BFF;
+        color: white;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        margin: 0 10px; 
+    }
+    a:hover, button:hover {
+        background-color: #0056b3;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        transform: translateY(-2px);
+    }
+    .alert, .alert-error {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #4CAF50;
+        color: white;
+        padding: 16px;
+        border-radius: 5px;
+        z-index: 1001;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.5s, top 0.5s;
+    }
+    .alert-error {
+        background-color: #f44336;
+    }
+    .graph-section {
+        text-align: center; 
+        margin-bottom: 20px;
+    }
+    .controls {
+        display: flex; 
+        justify-content: center; 
+        margin-bottom: 20px; 
+    }
+    #deviceSelector, #dataCountSelector, button {
+        margin-right: 10px; 
+        padding: 10px 15px; 
+    }
+    #telemetryChart {
+        width: 800px; 
+        height: 400px; 
+    }
+    </style>
+    {% load tags %}
+    {% load static %}
+    <script src="{% static 'jquery/jquery-3.7.1.min.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        {% if messages %}
+        {% for message in messages %}
+            <div id="{{ message.tags }}Message" class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% endif %}
+        <h2>Список ваших устройств</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Модель</th>
+                    <th>Серийный номер</th>
+                    <th>Токен</th>
+                    <th>Последняя телеметрия</th>
+                    <th>Действия</th> 
+                </tr>
+            </thead>
+            <tbody>
+                {% for device in devices %}
+                {% get_lastest_telemetry device.token as telemetry %}
+                <tr>
+                    <td>{{ device.model }}</td>
+                    <td>{{ device.serial_number }}</td>
+                    <td>{{ device.token }}</td>
+                    <td>{{ telemetry }}</td>
+                    <td><button onclick="deleteDevice('{{ device.id }}')">Удалить</button></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">Нет зарегистрированных устройств.</td>
+                </tr>
+                {% endfor %}
+            </tbody>            
+        </table>
+        <div class="buttons">
+            <a href="{% url 'register_device' %}">Добавить новое устройство</a>
+            <a href="{% url 'index' %}">На главную</a>
+        </div>
+        <div class="graph-section">
+            <h2>График телеметрии</h2>
+            <div class="controls">
+                <select id="deviceSelector">
+                    {% for device in devices %}
+                    <option value="{{ device.token }}">{{ device.model }}</option>
+                    {% endfor %}
+                </select>
+                <select id="dataCountSelector">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <button onclick="loadTelemetryData()">Показать данные</button>
+            </div>
+            <canvas id="telemetryChart"></canvas>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script>
+        window.onload = function() {
+            var successMessageBox = document.getElementById('successMessage');
+            var errorMessageBox = document.getElementById('errorMessage');
+            if (successMessageBox) {
+                showMessage(successMessageBox);
+            }
+            if (errorMessageBox) {
+                showMessage(errorMessageBox);
+            }
+        };
+        function showMessage(messageBox) {
+            messageBox.style.display = 'block';
+            messageBox.style.opacity = 1;
+            messageBox.style.top = "30px";
+            setTimeout(function() {
+                messageBox.style.opacity = 0;
+                messageBox.style.top = "20px";
+                setTimeout(function() { messageBox.style.display = 'none'; }, 500);
+            }, 3000);
+        }
+        function deleteDevice(deviceId) {
+            if (confirm('Вы уверены, что хотите удалить это устройство?')) {
+                fetch('/delete-device/', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ device_id: deviceId })
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Устройство удалено');
+                        location.reload(); 
+                    } else {
+                        response.json().then(data => {
+                            alert(data.message); 
+                        });
+                    }
+                }).catch(error => {
+                    alert('Произошла ошибка при удалении: ' + error.message);
+                });
+            }
+        }
+        function loadTelemetryData() {
+            var token = document.getElementById("deviceSelector").value;
+            var count = document.getElementById("dataCountSelector").value;
+            $.ajax({
+                url: '../api/telemetry/',
+                type: 'GET',
+                data: {
+                    'token': token,
+                    'count': count
+                },
+                success: function(data){
+                    getType(token, data);
+                },
+                error: function(){
+                    showMessage("Ошибка получения данных");
+                }
+            });         
+        }
+        function getType(token, data) {
+            $.ajax({
+                url: '../api/type/',
+                type: 'GET',
+                data: {
+                    'token': token,
+                },
+                success: function(type){
+                    renderChart(data, type);
+                },
+                error: function(){
+                    showMessage("Ошибка получения типа устройства");
+                }
+            });        
+        }
+        var currentChart = null; 
+        function renderChart(data, type) {
+            var c = document.getElementById("telemetryChart");
+            var ctx = c.getContext("2d");
+            if (currentChart) { 
+                currentChart.destroy(); 
+            }
+            ctx.clearRect(0, 0, c.width, c.height); 
+            var labels = data.map(d => {
+                var parsedDate = moment.utc(d.ressived_time, "YYYY-MM-DD HH:mm:ss");
+                return parsedDate.isValid() ? moment(parsedDate.toDate()).format('HH:mm:ss') : "Некорректная дата";
+            });
+            var chartData = [];
+
+            switch(type) {
+                case 'noise sensor':
+                    label = 'Уровень шума';
+                    chartData = data.map(d => d.data.noise);
+                    break;
+                case 'smart watch':
+                    label = 'Средняя частота сердечных сокращений днем';
+                    label2 = 'Средняя частота сердечных сокращений во время сна';
+                    chartData = data.map(d => d.data.average_day_heart_rate);
+                    chartData2 = data.map(d => d.data.average_sleep_heart_rate);
+                    break;
+                case 'humidity sensor':
+                    label = 'Уровень влажности';
+                    chartData = data.map(d => d.data.humidity);
+                    break;
+                case 'thermometer':
+                    label = 'Уровень температуры';
+                    chartData = data.map(d => d.data.temperature);
+                    break;
+            }
+                    
+            dataset = [{
+                        label: label,
+                        data: chartData,
+                        fill: false,
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1
+                    }];
+            
+            if (type == 'smart watch') {
+                dataset.push({
+                    label: label2,
+                    data: chartData2,
+                    fill: false,
+                    borderColor: 'rgb(34, 120, 135)',
+                    tension: 0.1
+                });
+            }
+
+            currentChart = new Chart(ctx, { 
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: dataset
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

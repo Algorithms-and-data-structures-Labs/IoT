@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация нового устройства</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('https://a.l3n.co/i/9vsGM.jpg'); 
+            background-size: cover;
+            background-position: center;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 350px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-bottom: 15px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        label, input, select, button, a {
+            width: calc(100% - 20px);
+            margin: 5px 0;
+        }
+        input, select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f8f8;
+        }
+        button, a {
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+        button:hover, a:hover {
+            background-color: #0056b3;
+        }
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 16px;
+            border-radius: 5px;
+            z-index: 1001;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s, top 0.5s;
+        }
+        .alert-error {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if messages %}
+        {% for message in messages %}
+            <div id="{{ message.tags }}Message" class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% endif %}
+        <h2>Регистрация нового устройства</h2>
+        <form action="{% url 'register_device' %}" method="post">
+            {% csrf_token %}
+            <label for="model">Модель:</label>
+            <input type="text" id="model" name="model" required>
+            <label for="serial_number">Серийный номер:</label>
+            <input type="text" id="serial_number" name="serial_number" required>
+            <label for="type">Тип:</label>
+            <select id="type" name="type" required>
+                {% for type_id, type_name in form.type.field.choices %}
+                    <option value="{{ type_id }}" {% if type_id == form.type.value %}selected{% endif %}>{{ type_name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Зарегистрировать устройство</button>
+            <a href="{% url 'list_devices' %}">Назад</a>
+        </form>
+    </div>
+    <script>
+        window.onload = function() {
+            var successMessageBox = document.getElementById('successMessage');
+            var errorMessageBox = document.getElementById('errorMessage');
+            if (successMessageBox) {
+                showMessage(successMessageBox);
+            }
+            if (errorMessageBox) {
+                showMessage(errorMessageBox);
+            }
+        };
+        function showMessage(messageBox) {
+            messageBox.style.display = 'block';
+            messageBox.style.opacity = 1;
+            messageBox.style.top = "30px";
+            setTimeout(function() {
+                messageBox.style.opacity = 0;
+                messageBox.style.top = "20px";
+                setTimeout(function() { messageBox.style.display = 'none'; }, 500);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
