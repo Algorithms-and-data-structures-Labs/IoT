@@ -88,24 +88,6 @@ def index(request):
     return render(request, 'index.html')
 
 
-def register_device(request):
-    if request.method == 'POST':
-        form = DeviceForm(request.POST)
-        if form.is_valid():
-            device = form.save(commit=False)
-            try:
-                device.save()
-                messages.success(request, 'Устройство успешно зарегистрировано.')
-                return redirect('list_devices')
-            except IntegrityError:
-                messages.error(request, 'Устройство с таким модельным номером или серийным номером уже существует.')
-                return render(request, 'register_device.html', {'form': form, 'devices': Devices.objects.all()})
-        else:
-            messages.error(request, 'Устройство с таким модельным номером или серийным номером уже существует!')
-    else:
-        form = DeviceForm()
-    return render(request, 'register_device.html', {'form': form})
-
 def list_devices(request):
     devices = Devices.objects.all()
     return render(request, 'list_devices.html', {'devices': devices})

@@ -140,8 +140,7 @@
             </tbody>            
         </table>
         <div class="buttons">
-            <a href="{% url 'register_device' %}">Добавить новое устройство</a>
-        <a href="{% url 'index' %}">Вернуться на главную</a>
+            <a href="{% url 'index' %}">Вернуться на главную</a>
         </div>
         <div class="graph-section">
             <h2>Телеметрия</h2>
@@ -262,10 +261,8 @@
                     chartData = data.map(d => d.data.pressure);
                     break;
                 case 'timer':
-                    label = 'Средняя частота сердечных сокращений днем';
-                    label2 = 'Средняя частота сердечных сокращений во время сна';
-                    chartData = data.map(d => d.data.average_day_heart_rate);
-                    chartData2 = data.map(d => d.data.average_sleep_heart_rate);
+                    label = 'Продолжительность работы';
+                    chartData = data.map(d => d.data.duration);
                     break;
                 case 'level sensor':
                     label = 'Уровень жидкости';
@@ -284,16 +281,6 @@
                         borderColor: 'rgb(54, 162, 235)',
                         tension: 0.1
                     }];
-            
-            if (type == 'smart watch') {
-                dataset.push({
-                    label: label2,
-                    data: chartData2,
-                    fill: false,
-                    borderColor: 'rgb(34, 120, 135)',
-                    tension: 0.1
-                });
-            }
 
             currentChart = new Chart(ctx, { 
                 type: 'line',
