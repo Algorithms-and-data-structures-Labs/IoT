@@ -93,19 +93,13 @@ def register_device(request):
         form = DeviceForm(request.POST)
         if form.is_valid():
             device = form.save(commit=False)
-            if request.user.is_authenticated:
-                device.owner = request.user.id
-                device.token = uuid.uuid4().hex
-                try:
-                    device.save()
-                    messages.success(request, 'Устройство успешно зарегистрировано.')
-                    return redirect('list_devices')
-                except IntegrityError:
-                    messages.error(request, 'Устройство с таким модельным номером или серийным номером уже существует.')
-                    return render(request, 'register_device.html', {'form': form, 'devices': Devices.objects.filter(owner=request.user.id)})
-            else:
-                messages.error(request, 'Пожалуйста, войдите в систему перед регистрацией устройства.')
-                return redirect('login')
+            try:
+                device.save()
+                messages.success(request, 'Устройство успешно зарегистрировано.')
+                return redirect('list_devices')
+            except IntegrityError:
+                messages.error(request, 'Устройство с таким модельным номером или серийным номером уже существует.')
+                return render(request, 'register_device.html', {'form': form, 'devices': Devices.objects.all()})
         else:
             messages.error(request, 'Устройство с таким модельным номером или серийным номером уже существует!')
     else:
@@ -113,10 +107,7 @@ def register_device(request):
     return render(request, 'register_device.html', {'form': form})
 
 def list_devices(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-
-    devices = Devices.objects.filter(owner=request.user.id)
+    devices = Devices.objects.all()
     return render(request, 'list_devices.html', {'devices': devices})
 
 
@@ -124,7 +115,7 @@ def delete_device(request):
     data = json.loads(request.body)
     device_id = data.get('device_id')
     try:
-        device = Devices.objects.get(id=device_id, owner=request.user.id)  
+        device = Devices.objects.get(id=device_id)
         device.delete()
         return JsonResponse({'status': 'success'}, status=200)
     except Devices.DoesNotExist:  
