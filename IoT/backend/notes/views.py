@@ -88,41 +88,6 @@ def index(request):
     return render(request, 'index.html')
 
 
-def user_login(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            messages.success(request, 'Вы успешно вошли в систему.')
-            return redirect('list_devices')
-        else:
-            return render(request, 'login.html', {'error_message': 'Неверное имя пользователя или пароль'})
-    return render(request, 'login.html')
-
-
-def register(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        email = request.POST['email']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
-        if password1 == password2:
-            try:
-                user = User.objects.create_user(username=username, email=email, password=password1)
-                user.save()
-                login(request, user)
-                messages.success(request, 'Регистрация прошла успешно. Добро пожаловать!')
-                return redirect('register')
-            except IntegrityError:
-                messages.error(request, 'Пользователь с таким именем уже существует.')
-        else:
-            messages.error(request, 'Пароли не совпадают.')
-            return render(request, 'register.html', {'error_message': 'Пароли не совпадают'})
-    return render(request, 'register.html')
-
-
 def register_device(request):
     if request.method == 'POST':
         form = DeviceForm(request.POST)
