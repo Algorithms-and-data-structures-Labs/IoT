@@ -11,9 +11,9 @@ path = os.path.dirname(os.path.abspath(argv[0]))
 config.read(path + r'\bot.ini')
 
 TOKENS = {
-    'noise': argv[1],
-    'watch': argv[2],
-    'humidity': argv[3],
+    'pressureSensor': argv[1],
+    'levelSensor': argv[2],
+    'timer': argv[3],
     'thermometer': argv[4]
 }
 
@@ -21,24 +21,19 @@ MIN_INTERVAL = int(config['TIMER']['MIN_INTERVAL'])
 MAX_INTERVAL = int(config['TIMER']['MAX_INTERVAL'])
 INTERVAL = randint(MIN_INTERVAL, MAX_INTERVAL)
 
-MIN_HOUR_FALLING = int(config['TELEMETRY.TIMESLEEP']['MIN_HOUR_FALLING'])
-MAX_HOUR_FALLING = int(config['TELEMETRY.TIMESLEEP']['MAX_HOUR_FALLING'])
-MIN_SLEEP_DURATION = int(config['TELEMETRY.TIMESLEEP']['MIN_SLEEP_DURATION'])
-MAX_SLEEP_DURATION = int(config['TELEMETRY.TIMESLEEP']['MAX_SLEEP_DURATION'])
+MIN_START_TIME = int(config['TELEMETRY.TIMER']['MIN_START_TIME'])
+MAX_START_TIME = int(config['TELEMETRY.TIMER']['MAX_START_TIME'])
+MIN_DURATION = int(config['TELEMETRY.TIMER']['MIN_DURATION'])
+MAX_DURATION = int(config['TELEMETRY.TIMER']['MAX_DURATION'])
 
-MIN_ROOM_TEMPERATURE = int(config['TELEMETRY.TEMPERATURE']['MIN_ROOM_TEMPERATURE'])
-MAX_ROOM_TEMPERATURE = int(config['TELEMETRY.TEMPERATURE']['MAX_ROOM_TEMPERATURE'])
+MIN_TEMPERATURE = int(config['TELEMETRY.TEMPERATURE']['MIN_TEMPERATURE'])
+MAX_TEMPERATURE = int(config['TELEMETRY.TEMPERATURE']['MAX_TEMPERATURE'])
 
-MIN_NOISE_VALUE = int(config['TELEMETRY.NOISE']['MIN_NOISE_VALUE'])
-MAX_NOISE_VALUE = int(config['TELEMETRY.NOISE']['MAX_NOISE_VALUE'])
+MIN_PRESSURE_VALUE = int(config['TELEMETRY.PRESSURE']['MIN_PRESSURE_VALUE'])
+MAX_PRESSURE_VALUE = int(config['TELEMETRY.PRESSURE']['MAX_PRESSURE_VALUE'])
 
-MIN_HUMIDITY = int(config['TELEMETRY.HUMIDITY']['MIN_HUMIDITY'])
-MAX_HUMIDITY = int(config['TELEMETRY.HUMIDITY']['MAX_HUMIDITY'])
-
-MIN_AVERAGE_HEART_RATE = int(config['TELEMETRY.PHYSIOLOGICAL']['MIN_AVERAGE_HEART_RATE'])
-MAX_AVERAGE_HEART_RATE = int(config['TELEMETRY.PHYSIOLOGICAL']['MAX_AVERAGE_HEART_RATE'])
-MIN_AVERAGE_SLEEP_HEART_RATE = int(config['TELEMETRY.PHYSIOLOGICAL']['MIN_AVERAGE_SLEEP_HEART_RATE'])
-MAX_AVERAGE_SLEEP_HEART_RATE = int(config['TELEMETRY.PHYSIOLOGICAL']['MAX_AVERAGE_SLEEP_HEART_RATE'])
+MIN_LEVEL = int(config['TELEMETRY.LEVEL']['MIN_LEVEL'])
+MAX_LEVEL = int(config['TELEMETRY.LEVEL']['MAX_LEVEL'])
 
 URL = config["WEB"]["URL"]
 
@@ -60,40 +55,36 @@ def post(token, value):
 
 def post_values():
     day = 1
-    hour_falling = randint(MIN_HOUR_FALLING, MAX_HOUR_FALLING) 
+    hour_falling = randint(MIN_START_TIME, MAX_START_TIME)
     if (hour_falling > 23):
         day -= 1
         hour_falling %= 24
 
     time_falling = (datetime.now() - timedelta(days=day)).replace(hour=hour_falling)
 
-    duration = randint(MIN_SLEEP_DURATION, MAX_SLEEP_DURATION)
-    heart_rate = randint(MIN_AVERAGE_HEART_RATE, MAX_AVERAGE_HEART_RATE)
-    sleep_heart_rate = randint(MIN_AVERAGE_SLEEP_HEART_RATE, MAX_AVERAGE_SLEEP_HEART_RATE)
+    duration = randint(MIN_DURATION, MAX_DURATION)
 
-    post(TOKENS['watch'], {
-        'time_falling_sleep': time_falling.isoformat(),
+    post(TOKENS['timer'], {
+        'start_time': time_falling.isoformat(),
         'duration': duration,
-        'average_day_heart_rate': heart_rate,
-        'average_sleep_heart_rate': sleep_heart_rate,
     })
 
-    temperature = randint(MIN_ROOM_TEMPERATURE, MAX_ROOM_TEMPERATURE)
+    temperature = randint(MIN_TEMPERATURE, MAX_TEMPERATURE)
 
     post(TOKENS['thermometer'], {
         'temperature': temperature
     })
 
-    noise = randint(MIN_NOISE_VALUE, MAX_NOISE_VALUE)
+    pressure = randint(MIN_PRESSURE_VALUE, MAX_PRESSURE_VALUE)
 
-    post(TOKENS['noise'], {
-        'noise': noise
+    post(TOKENS['pressureSensor'], {
+        'pressureSensor': pressure
     })
 
-    humidity = randint(MIN_HUMIDITY, MAX_HUMIDITY)
+    level = randint(MIN_LEVEL, MAX_LEVEL)
 
-    post(TOKENS['humidity'], {
-        'humidity': humidity
+    post(TOKENS['levelSensor'], {
+        'levelSensor': level
     })
 
 def repeater(interval, function):
