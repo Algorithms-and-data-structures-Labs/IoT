@@ -5,11 +5,11 @@
     <title>Список устройств нефтедобывающей установки</title>
     <style>
     body {
-        font-family: 'Roboto', sans-serif;
-        background-image: url('https://a.l3n.co/i/9vsGM.jpg'); 
+        font-family: 'Arial', sans-serif;
+        background-color: #0099CC;
         background-size: cover;
         background-position: center;
-        color: #333;
+        color: #000080;
         margin: 0;
         padding: 0;
         display: flex;
@@ -22,24 +22,22 @@
         width: 100%;
         max-width: 900px; 
         background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         padding: 20px;
     }
     h2 {
-        color: #333;
+        color: #000080;
         margin-bottom: 20px;
     }
     table {
-        width: 100%;
-        margin-top: 20px;
-        border-collapse: collapse;
-        table-layout: auto; 
+        width: 95%;
+        margin-top: 100px;
+        border-collapse: separate;
+        border-spacing: 0 10px;
     }
     th, td {
-        padding: 8px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+        border-bottom: 1px solid #000066;
         word-wrap: break-word; 
         white-space: normal; 
     }
@@ -53,21 +51,17 @@
         margin-top: 20px; 
     }
     button, a {
-        padding: 10px 20px;
-        background-color: #007BFF;
+        padding: 10px 10px;
+        background-color: #003399;
         color: white;
         cursor: pointer;
         border: none;
-        border-radius: 5px;
         text-decoration: none;
         font-size: 16px;
-        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
         margin: 0 10px; 
     }
     a:hover, button:hover {
-        background-color: #0056b3;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        transform: translateY(-2px);
+        background-color: #000066;
     }
     .alert, .alert-error {
         position: fixed;
@@ -76,7 +70,6 @@
         background-color: #4CAF50;
         color: white;
         padding: 16px;
-        border-radius: 5px;
         z-index: 1001;
         display: none;
         opacity: 0;
@@ -99,8 +92,8 @@
         padding: 10px 15px; 
     }
     #telemetryChart {
-        width: 800px; 
-        height: 400px; 
+        width: 700px;
+        height: 300px;
     }
     </style>
     {% load tags %}
@@ -141,17 +134,17 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5">Нет зарегистрированных устройств.</td>
+                    <td colspan="5">Нет добавленных устройств.</td>
                 </tr>
                 {% endfor %}
             </tbody>            
         </table>
         <div class="buttons">
             <a href="{% url 'register_device' %}">Добавить новое устройство</a>
-            <a href="{% url 'index' %}">На главную</a>
+        <a href="{% url 'index' %}">Вернуться на главную</a>
         </div>
         <div class="graph-section">
-            <h2>График телеметрии</h2>
+            <h2>Телеметрия</h2>
             <div class="controls">
                 <select id="deviceSelector">
                     {% for device in devices %}
@@ -163,6 +156,7 @@
                     <option value="20">20</option>
                     <option value="50">50</option>
                     <option value="100">100</option>
+                    <option value="150">150</option>
                 </select>
                 <button onclick="loadTelemetryData()">Вывести данные на экран</button>
             </div>
