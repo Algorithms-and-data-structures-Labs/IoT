@@ -21,7 +21,6 @@ class Devices(models.Model):
     model = models.CharField(max_length=100)
     serial_number = models.CharField(max_length=100)
     type = models.ForeignKey(DeviceType, on_delete=models.CASCADE)
-    owner = models.IntegerField(blank=True, null=True)  
     token = models.CharField(max_length=128, blank=True, null=True)  
 
     def __str__(self):

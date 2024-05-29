@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Список устройств</title>
+    <title>Список устройств нефтедобывающей установки</title>
     <style>
     body {
         font-family: 'Arial', sans-serif;
@@ -158,7 +158,7 @@
                     <option value="100">100</option>
                     <option value="150">150</option>
                 </select>
-                <button onclick="loadTelemetryData()">Показать данные</button>
+                <button onclick="loadTelemetryData()">Вывести данные на экран</button>
             </div>
             <canvas id="telemetryChart"></canvas>
         </div>
@@ -257,22 +257,22 @@
             var chartData = [];
 
             switch(type) {
-                case 'noise sensor':
-                    label = 'Уровень шума';
-                    chartData = data.map(d => d.data.noise);
+                case 'pressure sensor':
+                    label = 'Давление в механизмах';
+                    chartData = data.map(d => d.data.pressure);
                     break;
-                case 'smart watch':
+                case 'timer':
                     label = 'Средняя частота сердечных сокращений днем';
                     label2 = 'Средняя частота сердечных сокращений во время сна';
                     chartData = data.map(d => d.data.average_day_heart_rate);
                     chartData2 = data.map(d => d.data.average_sleep_heart_rate);
                     break;
-                case 'humidity sensor':
-                    label = 'Уровень влажности';
-                    chartData = data.map(d => d.data.humidity);
+                case 'level sensor':
+                    label = 'Уровень жидкости';
+                    chartData = data.map(d => d.data.level);
                     break;
                 case 'thermometer':
-                    label = 'Уровень температуры';
+                    label = 'Температура';
                     chartData = data.map(d => d.data.temperature);
                     break;
             }

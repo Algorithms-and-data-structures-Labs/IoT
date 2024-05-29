@@ -20,8 +20,6 @@ from notes import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('login/', views.user_login, name='login'),
-    path('register/', views.register, name='register'),
     path('api/telemetry/', views.telemetry, name='telemetry'),
     path('api/type/', views.type, name='type'),
     path('devices/register/', views.register_device, name='register_device'),  

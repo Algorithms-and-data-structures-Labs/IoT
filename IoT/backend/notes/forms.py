@@ -6,7 +6,7 @@ class DeviceForm(forms.ModelForm):
 
     class Meta:
         model = Devices
-        fields = ['model', 'serial_number', 'type', 'owner', 'token']
+        fields = ['model', 'serial_number', 'type', 'token']
 
     def __init__(self, *args, **kwargs):
         super(DeviceForm, self).__init__(*args, **kwargs)
