@@ -2,14 +2,14 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Регистрация нового устройства</title>
+    <title>Добавление нового устройства</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-image: url('https://a.l3n.co/i/9vsGM.jpg'); 
+            background-color: #0099CC;
             background-size: cover;
             background-position: center;
-            color: #333;
+            color: #000080;
             margin: 0;
             padding: 0;
             display: flex;
@@ -20,14 +20,12 @@
         }
         .container {
             width: 100%;
-            max-width: 350px;
+            max-width: 700px;
             background-color: #ffffff;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         h2 {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         form {
             display: flex;
@@ -41,40 +39,23 @@
         input, select {
             padding: 10px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f8f8f8;
+            background-color: #336699;
         }
         button, a {
-            padding: 12px;
+            padding: 15px;
             margin-top: 10px;
             margin-bottom: 10px;
             color: white;
-            background-color: #007BFF;
+            background-color: #336699;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
             text-decoration: none;
         }
         button:hover, a:hover {
-            background-color: #0056b3;
+            background-color: #000066;
         }
-        .alert {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 16px;
-            border-radius: 5px;
-            z-index: 1001;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.5s, top 0.5s;
-        }
-        .alert-error {
-            background-color: #f44336;
-        }
+
     </style>
 </head>
 <body>
@@ -86,7 +67,7 @@
             </div>
         {% endfor %}
         {% endif %}
-        <h2>Регистрация нового устройства</h2>
+        <h2>Добавление нового устройства</h2>
         <form action="{% url 'register_device' %}" method="post">
             {% csrf_token %}
             <label for="model">Модель:</label>
@@ -99,7 +80,7 @@
                     <option value="{{ type_id }}" {% if type_id == form.type.value %}selected{% endif %}>{{ type_name }}</option>
                 {% endfor %}
             </select>
-            <button type="submit">Зарегистрировать устройство</button>
+            <button type="submit">Добавить устройство</button>
             <a href="{% url 'list_devices' %}">Назад</a>
         </form>
     </div>

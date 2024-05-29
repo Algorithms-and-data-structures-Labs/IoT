@@ -2,14 +2,14 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Добро пожаловать в Анализатор качества сна!</title>
+    <title>Умный дом</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-image: url('https://a.l3n.co/i/9vsGM.jpg'); 
+            font-family: 'Georgia', sans-serif;
+            background-image: url('https://perpetuum.enocean.com/wp-content/uploads/2021/03/perpetuum-1-2021-smart-home-nixdorf-smart-home-retrofit-secure-comfortable-and-energy-efficient-header.jpg');
             background-size: cover;
             background-position: center;
-            color: #333;
+            color: #000080;
             margin: 0;
             padding: 0;
             display: flex;
@@ -19,29 +19,13 @@
             text-align: center;
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.9); 
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            animation: fadeIn 1.5s ease-out;
+            background-color: rgba(255, 255, 255, 0.9);
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-        .alert {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 16px;
-            border-radius: 5px;
-            z-index: 1001;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.5s, top 0.5s;
         }
         a {
             color: #007BFF;
@@ -54,9 +38,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>Добро пожаловать в Анализатор качества сна!</h1>
-        <p>Здесь вы можете узнать много интересного о функциях нашего сайта.</p>
-        <p>Если вы еще не зарегистрированы, <a href="{% url 'register' %}">зарегистрируйтесь сейчас</a> или перейдите на <a href="{% url 'login' %}">страницу входа</a> для авторизации.</p>
+        <h1>Умный дом</h1>
+        <p> <a href="{% url 'list_devices' %}">Посмотреть устройства умного дома</a> </p>
     </div>
 </body>
 </html>
