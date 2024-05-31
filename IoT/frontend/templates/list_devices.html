@@ -88,7 +88,7 @@
         justify-content: center;
         margin-bottom: 20px;
     }
-    #deviceSelector, #dataCountSelector, button {
+    #deviceSelector, button {
         margin-right: 10px;
         padding: 10px 15px;
         border-radius: 4px;
@@ -97,7 +97,7 @@
         color: #ffffff;
         font-size: 1.2em;
     }
-    #deviceSelector:focus, #dataCountSelector:focus, button:focus {
+    #deviceSelector:focus, button:focus {
         outline: none;
         border-color: #61afef;
     }
@@ -163,13 +163,6 @@
                     <option value="{{ device.token }}">{{ device.model }}</option>
                     {% endfor %}
                 </select>
-                <select id="dataCountSelector">
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="150">150</option>
-                </select>
                 <button onclick="loadTelemetryData()">Вывести данные на экран</button>
             </div>
             <canvas id="telemetryChart"></canvas>
@@ -223,7 +216,7 @@
         }
         function loadTelemetryData() {
             var token = document.getElementById("deviceSelector").value;
-            var count = document.getElementById("dataCountSelector").value;
+            var count = 20;
             $.ajax({
                 url: '../api/telemetry/',
                 type: 'GET',
@@ -292,47 +285,46 @@
                 label: label,
                 data: chartData,
                 fill: false,
-                borderColor: 'rgb(97, 175, 239)',
+                borderColor: 'rgb(255,51,90)',
                 tension: 0.1
             }];
 
             currentChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: labels,
-        datasets: dataset
-    },
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        },
-        plugins: {
-            title: {
-                display: true,
-                text: 'График телеметрии',
-                color: 'white',
-                font: {
-                    size: 18,
-                    family: 'Roboto',
-                    weight: 'bold'
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: dataset
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'График телеметрии',
+                            color: 'white',
+                            font: {
+                                size: 18,
+                                family: 'Roboto',
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#4c566c',
+                            titleColor: 'white',
+                            bodyColor: 'white'
+                        }
+                    }
                 }
-            },
-            legend: {
-                labels: {
-                    color: 'white'
-                }
-            },
-            tooltip: {
-                backgroundColor: '#4c566c',
-                titleColor: 'white',
-                bodyColor: 'white'
-            }
-        }
-    }
-});
-
+            });
         }
     </script>
 </body>
